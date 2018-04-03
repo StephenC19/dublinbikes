@@ -13,7 +13,7 @@ from datetime import datetime
 
 
 staticData = json.load(open('Dublin.json'))
-apiKey = "066552409dad0809af4e338d67817a8d931d697d"
+
 dubUrl = "https://api.jcdecaux.com/vls/v1/stations/30?contract=Dublin&apiKey=066552409dad0809af4e338d67817a8d931d697d"
 
         
@@ -75,13 +75,7 @@ class Database:
         
         from mysql.connector import errorcode
         try:
-            dhost="dublinbikes.cww5dmspazsv.eu-west-1.rds.amazonaws.com"
-            dport=3306
-            dbname="dublinbikes"
-            duser="dbuser"
-            dpassword="comp30670"
-            cnx = mysql.connector.connect(user = duser, password = dpassword, 
-                                      host = dhost, database=dbname)
+            
             self.connection = cnx
             self.cur = cnx.cursor()
             print("connected")

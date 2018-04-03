@@ -25,13 +25,7 @@ def main(args=None):
     
 """
     try:
-        dhost="dublinbikes.cww5dmspazsv.eu-west-1.rds.amazonaws.com"
-        dport=3306
-        dbname="dublinbikes"
-        duser="dbuser"
-        dpassword="comp30670"
-        cnx = mysql.connector.connect(user = duser, password = dpassword, 
-                                      host = dhost, database=dbname)
+        
         
         
         #add_info = ("INSERT INTO stations"
