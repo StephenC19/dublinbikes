@@ -11,8 +11,6 @@ from datetime import datetime
 
 
 
-#Use json.load to read in the Dublin.json file
-#Dublin.json contains static information about all the bike stations
 
 staticData = json.load(open('Dublin.json'))
 apiKey = "066552409dad0809af4e338d67817a8d931d697d"
@@ -35,8 +33,8 @@ def stations_list(fileName):
 def timestamp_to_ISO(timestamp):
     moment = datetime.fromtimestamp(timestamp / 1000)
     return moment.time().isoformat()
-
-def information():
+ 
+def info_csv():
     stations = stations_list('Dublin.json')
     
     #Save information for all stations in a csv
@@ -57,43 +55,63 @@ def information():
             writer.writerow(station_info)
     #-------------------------------------------
     
-    
-    #Send the information to the database
-    g = query_API(30) 
+def single_station_info(stationNumber):
+    g = query_API(stationNumber) 
     station_info = {'number': g["number"], 
                     'name': g["name"], 
                     'latitude': g["position"]["lat"], 
                     'longitude': g["position"]["lng"], 
                     'bikes': g["available_bikes"], 
                     'stands': g["available_bike_stands"]}
-        
     
+    
+    return station_info
+        
     
 class Database:
-    host="something.com"
-    port=3306
-    dbname="DublinBikesStationInfo"
-    user="your_username"
-    password="your_password"
+    
 
     def __init__(self):
-        cnx = mysql.connector.connect(user=user, password = password, 
-                                      host = host, database=dbname)
-        self.connection = cnx
-        self.cursor = cnx.cursor()
+        
+        from mysql.connector import errorcode
+        try:
+            dhost="dublinbikes.cww5dmspazsv.eu-west-1.rds.amazonaws.com"
+            dport=3306
+            dbname="dublinbikes"
+            duser="dbuser"
+            dpassword="comp30670"
+            cnx = mysql.connector.connect(user = duser, password = dpassword, 
+                                      host = dhost, database=dbname)
+            self.connection = cnx
+            self.cur = cnx.cursor()
+            print("connected")
+        except mysql.connector.Error as err:
+            if err.errno == errorcode.ER_ACCESS_DENIED_ERROR:
+                print("Something is wrong with your user name or password")
+            elif err.errno == errorcode.ER_BAD_DB_ERROR:
+                print("Database does not exist")
+            else:
+                print(err)
+#             else:
+#                 cnx.close()
+#             
+         
         
     def add_station_info(self, statInfo):
-        add_info = ("INSERT INTO stations"
-               "(number, name, latitude, longitude, bikes_available, stands_available) "
-               "VALUES (%(number)s, %(name)s, %(latitude)s, %(longitude), %(bikes)s, %(stands)s")
-        self.cursor.execute(add_info, statInfo)
-    
+        query = "INSERT INTO stations (number, name, latitude, longitude, bikes_available, stands_available) " \
+                    "VALUES (%(number)s, %(name)s, %(latitude)s, %(longitude)s, %(bikes)s, %(stands)s) "
+        
+        self.cur.execute(query, statInfo)
+        self.connection.commit()
+        print("info added")
+        
+        
     def close_db(self):
-        cnx.commit()
-        cursor.close()
-        cnx.close()
+        self.cur.close()
+        self.connection.close()
+    def test_thing(self):
+        return "thing"
       
-      
-print(stations_list('Dublin.json'))
-print(query_API(55))
-information()
+#print(stations_list('Dublin.json'))
+#print(query_API(55))
+#information()
