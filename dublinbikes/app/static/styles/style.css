@@ -1,17 +1,82 @@
-#googleMap {
-    width: 60%;
-    height: 300px;
-    border: 1px solid black;
-    margin: auto;
+body{
+    margin:0px;
+    padding:0px;
+    background-color: lightslategrey;
+}
+#dailyDiv{
+    color:black;
+    border-right:4px solid rgb(8,75,84);
+    border-bottom:4px solid rgb(8,75,84);
+    background: linear-gradient(rgba(8,75,84,1), white);
+    width: 288px;
+    height: 50%;
+    display:inline-block;
+    text-align: center; 
+    float: left;
 }
 
-html {
+#header{
+    background:rgb(8,75,84);
+    width:100%;
+    height:60px;
+}
+img{
+    width:100px;
+    height:100px;
+    text-align: center; 
+    padding: 0px;
+    margin:0px;
+    
+}
+
+#googleMap {
+    height: 50%;
+    width: 50%;
+    min-width: 700px;
+    min-height: 300px;
+    border-right:4px solid rgb(8,75,84);
+    border-left:4px solid rgb(8,75,84);
+    border-bottom:4px solid rgb(8,75,84);
+    float: left;
+}
+h1{
+    margin:0px;
+    padding-top: 10px;
+    font-family: bell mt;
+    font-size: 40px;
+    color: white;
+}
+h2{
+    color: white;
+}
+#line{
+    border-top: 1px solid black;
+    width: 350px;
+    position:relative;
+    left:23%;
+    padding:0px;
+    padding-bottom: 5px;
+    margin:0px;
+}
+
+#station_availability h1 {
+	color: blue;
+}
+b{
+    font-size: 20px;
+}
+html, body {
     margin: 0;
     padding: 0;
-    border: 0;
-    background-color: #f5f5ef;
+    height: 100%;
 }
-
+em{
+    padding-bottom: 0px;
+    margin-bottom: 0px;
+    font: baskerville;
+    font-size: 40px;
+    color: white;
+}
 h1, h6 {
     text-align: center;
 }

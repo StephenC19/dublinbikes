@@ -1,0 +1,124 @@
+<html>
+
+<head>
+    <link rel=stylesheet type="text/css" href="{{ url_for('static',filename='styles/style.css') }}" />
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <title>Dublin Bikes Info</title>
+</head>
+
+<body>
+
+    <div id="header">
+        <h1>Real-time Dublin Bike Information</h1>
+        <img src = "https://vignette.wikia.nocookie.net/logopedia/images/7/74/Dublinbikes.svg/revision/latest?cb=20140625224430" style = "width:100px;height:55px;position:fixed;right:20%;top:0px;">
+    </div>
+
+    <div style="background-color: rgba(255,255,255,0.7);width:1000px;height: 100%; margin: auto;">
+<!--        <div id = "centerblock">-->
+        <div id="googleMap"></div>
+        
+        <div id="dailyDiv">
+            <h2>12/04/2018</h2>
+            <img src="http://openweathermap.org/img/w/04d.png" style = "float: left;margin-left: 15px;">
+            <em>9°C</em><br/><br/><br/><br/><br/><br/>Rain<br/><br/><b>Min: </b>7°C<br/><b>Max:  </b>10°C<br/><br/>Moderate Rain
+            
+        </div>
+    </div>
+    <script type=text/javascript>
+    	$SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
+    </script>
+
+    <script>
+        function myMap() {
+        	var jqxhr = $.getJSON($SCRIPT_ROOT + "/stations", function(data) {
+				var stations = data.stations;
+				console.log("stations", stations);
+				//draw markers
+				stations.forEach(function(stations) {
+					// console.log(station.name, station.number);
+					var marker = new google.maps.Marker({
+						position : {
+							lat : stations.latitude,
+							lng : stations.longitude
+						},
+					map : map,
+					title : stations.name,
+					station_number : stations.number
+					});
+
+					
+					var infowindow = null;					
+
+					google.maps.event.addListener(marker, 'click', function() {
+						if (infowindow) {
+							infowindow.close();
+						}
+						infowindow = new google.maps.InfoWindow();
+
+						
+
+						contentString = '<div id = "content"><h1>' + stations.name + '</h1></div>' + '<div id="station_availability"><h1>Bikes available: ' + stations.bikes_available + '<br> Stands available: ' + stations.stands_available + '</h1></div>';
+						//infowindow.setContent("Stop: " + stations.number + "<br>" + stations.name);
+						infowindow.setContent(contentString);
+						infowindow.open(map, marker);
+					});
+				})
+			})
+
+            var myLatLng = {
+                lat: 53.349976,
+                lng: -6.260354
+            };
+            var mapProp = {
+                center: new google.maps.LatLng(53.349976, -6.260354),
+                zoom: 13,
+            };
+            var map = new google.maps.Map(document.getElementById("googleMap"), mapProp);
+
+            /*var marker = new google.maps.Marker({
+                position: myLatLng,
+                map: map,
+                title: 'Dublin City'
+            });*/
+
+            /*var number = JSON.parse('{{ number|safe }}');
+            var address = JSON.parse('{{ address|safe }}');
+            var lat = JSON.parse('{{ lat|safe }}');
+            var long = JSON.parse('{{ long|safe }}');
+            console.log(number[1] + address);*/
+
+            /*var infowindow = new google.maps.InfoWindow(),
+                marker, i
+
+            for (var i = 0; i < lat.length; i++) {
+                var latLng = new google.maps.LatLng(lat[i], long[i]);
+
+                var marker = new google.maps.Marker({
+                    position: latLng,
+                    map: map,
+                    title: 'Dublin City'
+                });
+
+
+
+                google.maps.event.addListener(marker, 'click', (function(marker, i) {
+                    return function() {
+                        infowindow.setContent("Stop: " + number[i] + "<br>" + address[i]);
+                        infowindow.open(map, marker);
+                    }
+                })(marker, i));
+
+            }*/
+
+
+
+        }
+        google.maps.event.addDomListener(window, 'load', myMap);
+    </script>
+
+
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAMns2Y33xj53IYHDDwQQb5P-R2mi5nxQk&callback=myMap"></script>
+    
+</body>
+
+</html>
