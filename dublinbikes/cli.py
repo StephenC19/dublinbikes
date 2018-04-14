@@ -5,6 +5,8 @@ import sys
 sys.path.append('.')
 import click
 import dublinbikes
+import datetime
+import time
 
 
 @click.command()
@@ -17,16 +19,34 @@ def main(args=None):
     
     dubStationInfo = dublinbikes.Database()
     stationList = dublinbikes.stations_list('Dublin.json')
-    for i in stationList:
-        k = dublinbikes.single_station_info(i)
-        dubStationInfo.add_station_info(k)
-    dublinbikes.close_db()
+    i = dublinbikes.query_weather()
+    print(i)
+   # for i in stationList:
+    #    k = dublinbikes.single_station_info(i)
+    #    dubStationInfo.add_station_info(k)
+    #dublinbikes.close_db()
+    #print(dubStationInfo.print_db())
+    count = 0
+#     for i in stationList:
+#         k = dublinbikes.single_station_info(i)
+#         dubStationInfo.update_realtime(k, i)
+#     print(dubStationInfo.print_station_info(30))
+    
+    #dubStationInfo.update_realtime(k)
+    #dubStationInfo.print_db()
+#     while count < 3:
+#         
+#         k = dublinbikes.single_station_info(16)
+#         dubStationInfo.add_station_info(k)
+#         time.sleep(300)
+#         count += 1
+        
+    dubStationInfo.close_db()
+    
     
     
 """
     try:
-        
-        
         
         #add_info = ("INSERT INTO stations"
          #      "(testrow) "

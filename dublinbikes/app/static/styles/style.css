@@ -58,7 +58,11 @@ h2{
     padding-bottom: 5px;
     margin:0px;
 }
-
+#chart_div{
+    position:absolute;
+    bottom: 100px;
+    width: 1000px;
+}
 #station_availability h1 {
 	color: blue;
 }
@@ -71,10 +75,10 @@ html, body {
     height: 100%;
 }
 em{
-    padding-bottom: 0px;
-    margin-bottom: 0px;
+    padding:0px;
+    margin:0px;
     font: baskerville;
-    font-size: 40px;
+    font-size: 50px;
     color: white;
 }
 h1, h6 {

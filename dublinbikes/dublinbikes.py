@@ -28,7 +28,8 @@ def query_weather():
     weatherInfo= {'main': r['weather'][0]['main'], 
                      'detail': r['weather'][0]['description'], 
                      'temp': r['main']['temp'], 
-                     'wind': r['wind']['speed']}
+                     'wind': r['wind']['speed'],
+                     'icon': r['weather'][0]['icon']}
     return r
     
 def stations_list(fileName):

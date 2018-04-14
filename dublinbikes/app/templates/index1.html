@@ -10,7 +10,7 @@
 
     <div id="header">
         <h1>Real-time Dublin Bike Information</h1>
-        <img src = "https://vignette.wikia.nocookie.net/logopedia/images/7/74/Dublinbikes.svg/revision/latest?cb=20140625224430" style = "width:100px;height:55px;position:fixed;right:20%;top:0px;">
+        <img src = "https://vignette.wikia.nocookie.net/logopedia/images/7/74/Dublinbikes.svg/revision/latest?cb=20140625224430" style = "width:100px;height:55px;position:absolute;right:20%;top:0px;">
     </div>
 
     <div style="background-color: rgba(255,255,255,0.7);width:1000px;height: 100%; margin: auto;">
@@ -23,100 +23,154 @@
             <em>9°C</em><br/><br/><br/><br/><br/><br/>Rain<br/><br/><b>Min: </b>7°C<br/><b>Max:  </b>10°C<br/><br/>Moderate Rain
             
         </div>
+
+        <div id = "testingjs"></div>
+        <div id="chart_div"></div>
     </div>
     <script type=text/javascript>
     	$SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
     </script>
+    <script>infoArray = [];</script>
 
-    <script>
-        function myMap() {
-        	var jqxhr = $.getJSON($SCRIPT_ROOT + "/stations", function(data) {
-				var stations = data.stations;
-				console.log("stations", stations);
-				//draw markers
-				stations.forEach(function(stations) {
-					// console.log(station.name, station.number);
-					var marker = new google.maps.Marker({
-						position : {
-							lat : stations.latitude,
-							lng : stations.longitude
-						},
-					map : map,
-					title : stations.name,
-					station_number : stations.number
-					});
-
-					
-					var infowindow = null;					
-
-					google.maps.event.addListener(marker, 'click', function() {
-						if (infowindow) {
-							infowindow.close();
-						}
-						infowindow = new google.maps.InfoWindow();
-
-						
-
-						contentString = '<div id = "content"><h1>' + stations.name + '</h1></div>' + '<div id="station_availability"><h1>Bikes available: ' + stations.bikes_available + '<br> Stands available: ' + stations.stands_available + '</h1></div>';
-						//infowindow.setContent("Stop: " + stations.number + "<br>" + stations.name);
-						infowindow.setContent(contentString);
-						infowindow.open(map, marker);
-					});
-				})
-			})
-
-            var myLatLng = {
-                lat: 53.349976,
-                lng: -6.260354
-            };
-            var mapProp = {
-                center: new google.maps.LatLng(53.349976, -6.260354),
-                zoom: 13,
-            };
-            var map = new google.maps.Map(document.getElementById("googleMap"), mapProp);
-
-            /*var marker = new google.maps.Marker({
-                position: myLatLng,
-                map: map,
-                title: 'Dublin City'
-            });*/
-
-            /*var number = JSON.parse('{{ number|safe }}');
-            var address = JSON.parse('{{ address|safe }}');
-            var lat = JSON.parse('{{ lat|safe }}');
-            var long = JSON.parse('{{ long|safe }}');
-            console.log(number[1] + address);*/
-
-            /*var infowindow = new google.maps.InfoWindow(),
-                marker, i
-
-            for (var i = 0; i < lat.length; i++) {
-                var latLng = new google.maps.LatLng(lat[i], long[i]);
-
-                var marker = new google.maps.Marker({
-                    position: latLng,
-                    map: map,
-                    title: 'Dublin City'
-                });
-
-
-
-                google.maps.event.addListener(marker, 'click', (function(marker, i) {
-                    return function() {
-                        infowindow.setContent("Stop: " + number[i] + "<br>" + address[i]);
-                        infowindow.open(map, marker);
-                    }
-                })(marker, i));
-
-            }*/
-
-
-
-        }
-        google.maps.event.addDomListener(window, 'load', myMap);
+   <script>
+//       function getDataframe() {
+//           //--------
+////           var jqxhr = $.getJSON($SCRIPT_ROOT + "/dataframe/23", function(dataf) {
+////               console.log("hello") 
+////               var dope = dataf.slice(5,48);
+////               var thing = JSON.parse(dope)
+////               var bikes = thing.stands_available; 
+////               console.log(bikes) 
+////               document.getElementById("testingjs").innerHTML = dope; 
+////            }); 
+//           //--------
+//           var jqxhr = $.getJSON($SCRIPT_ROOT + "/dataframe/23", function(dataf) {
+//               console.log("hello") 
+//               var thing = JSON.parse(dataf);
+//               var array = $.map(thing, function(value, index) {return [value];});
+//               var bikes = array[0].bikes_available;
+//               var info = ""
+//               var a = [];
+//               for (var i=0; i < array.length; i++) {
+//                   var bikes = array[i].bikes_available;
+//                   var t = array[i].time;
+//                   b = [t, bikes]
+//                   a.push(b);
+//                   info += "<p>bikes available = " + bikes + "</p><br/>";
+//               };
+//               document.getElementById("testingjs").innerHTML = a;
+//            }); 
+//           
+//       }
+                                 
     </script>
+    <script>
+                                 
+       function myMap() {
+           var jqxhr = $.getJSON($SCRIPT_ROOT + "/stations", function(data) {
+                var stations = data.stations;
+
+                console.log("stations", stations);
+                //draw markers
+                stations.forEach(function(stations) {
+                    var marker = new google.maps.Marker({
+                        position : {
+                            lat : stations.latitude,
+                            lng : stations.longitude
+                        },
+                    map : map,
+                    title : stations.name,
+                    station_number : stations.number
+                    });                
+
+                    google.maps.event.addListener(marker, 'click', function() {
+                       for (var i=0;i<infoArray.length;i++) {
+                           infoArray[i].close();
+                       }
+                       var infowindow = new google.maps.InfoWindow();
+                       infoArray.push(infowindow);
+
+                        contentString = '<div id = "content"><h3>' + stations.name + '</h3></div>' + '<div id="station_availability"><h3>Bikes available: ' + stations.bikes_available + '<br> Stands available: ' + stations.stands_available + '</h3><button type="button" onclick = "getDataframe()">More Info</button></div>';
+                        infowindow.setContent(contentString);
+                        infowindow.open(map, marker);
+
+//                       document.getElementById("jsdata").innerHTML = stations.bikes_available;
+                    });
+                })
+            })
+           
 
 
+
+//           var jqweather = $.getJSON($SCRIPT_ROOT + "/weather", function(data) {
+//                var weatherInfo = data.weatherInfo;
+//                console.log(weatherInfo);
+//                var actualTemp = weatherInfo.temp - 273.15; //turning kelvin temp to actual temp in degrees celsius
+//                document.getElementById("jsdata").innerHTML = "<h2>The forecast is: " + weatherInfo.detail + "<br>The temperature is: " + actualTemp + "</h2>";
+//                
+//            })
+           var myLatLng = {
+               lat: 53.349976,
+               lng: -6.260354
+           };
+           var mapProp = {
+               center: new google.maps.LatLng(53.349976, -6.260354),
+               zoom: 13,
+           };
+           var map = new google.maps.Map(document.getElementById("googleMap"), mapProp);
+       }
+       google.maps.event.addDomListener(window, 'load', myMap);
+   </script>
+    
+    
+    
+    
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <script>
+        function getDataframe() {
+            google.charts.load('current', {packages: ['corechart', 'line']});
+            google.charts.setOnLoadCallback(drawBasic);
+            
+            function drawBasic() {
+                
+                var jqxhr = $.getJSON($SCRIPT_ROOT + "/dataframe/23", function(dataf) {
+               console.log("hello") 
+               var thing = JSON.parse(dataf);
+               var array = $.map(thing, function(value, index) {return [value];});
+               var bikes = array[0].bikes_available;
+               var info = "";
+               var a = [];
+               for (var i=0; i < array.length; i++) {
+                   var bikes = array[i].bikes_available;
+                   var t = array[i].time;
+                   b = [t, bikes]
+                   a.push(b);
+                   info += "<p>bikes available = " + bikes + "</p><br/>";
+               };
+                    document.getElementById("testingjs").innerHTML = a;
+             
+                  var data = new google.visualization.DataTable();
+                  data.addColumn('number', 'X');
+                  data.addColumn('number', 'BIkes');
+                    console.log("a is" + a)
+                  data.addRows(a);
+
+                  var options = {
+                    hAxis: {
+                      title: 'Time'
+                    },
+                    vAxis: {
+                      title: 'Bikes Available'
+                    }
+                  };
+
+                  var chart = new google.visualization.LineChart(document.getElementById('chart_div'));
+
+                  chart.draw(data, options);
+                    });
+                }
+        }
+            </script>
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAMns2Y33xj53IYHDDwQQb5P-R2mi5nxQk&callback=myMap"></script>
     
 </body>
