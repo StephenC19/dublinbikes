@@ -48,21 +48,44 @@ h1{
 }
 h2{
     color: white;
+    font: Ironclad;
 }
 #line{
-    border-top: 1px solid black;
-    width: 350px;
-    position:relative;
-    left:23%;
-    padding:0px;
-    padding-bottom: 5px;
-    margin:0px;
+    border-bottom: 4px solid rgb(8,75,84);
+    width: 290px;
+    height:5px;
+    margin: auto;
+    margin-top:80px;
+    padding-bottom: 0px;
 }
 #chart_div{
     position:absolute;
     bottom: 100px;
     width: 1000px;
 }
+#temp{
+    width: 150px;
+    float:right;
+    letter-spacing: 1px;
+    margin-right: 10px;
+    margin-top: 20px;
+}
+#icon{
+    width: 125px;
+    float: left;
+}
+.keys{
+    width:60px;
+    height:60px;
+}
+#k{
+    padding-top:20px;
+    margin-left:30px;
+    margin-top: 10px;
+    width: 250;
+    text-align: left;
+}
+
 #station_availability h1 {
 	color: blue;
 }
@@ -77,8 +100,9 @@ html, body {
 em{
     padding:0px;
     margin:0px;
+    margin-top: 5px;
     font: baskerville;
-    font-size: 50px;
+    font-size: 40px;
     color: white;
 }
 h1, h6 {

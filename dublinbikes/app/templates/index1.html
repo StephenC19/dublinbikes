@@ -17,15 +17,20 @@
 <!--        <div id = "centerblock">-->
         <div id="googleMap"></div>
         
-        <div id="dailyDiv">
-            <h2>12/04/2018</h2>
-            <img src="http://openweathermap.org/img/w/04d.png" style = "float: left;margin-left: 15px;">
-            <em>9°C</em><br/><br/><br/><br/><br/><br/>Rain<br/><br/><b>Min: </b>7°C<br/><b>Max:  </b>10°C<br/><br/>Moderate Rain
-            
-        </div>
+        <div id="dailyDiv"></div>
 
         <div id = "testingjs"></div>
         <div id="chart_div"></div>
+        <div id = "weatherdata">
+        <div id="key">
+        <ul>Bikes available:
+            <li><img src="/static/bikeicon.png" class = "keys">: High</li>
+            <li><img src="/static/bikeicon-orange.png" class = "keys">: Medium</li>
+            <li><img src="/static/bikeicon-red.png" class = "keys">: Low</li>
+            <li><img src="/static/bikeicon-black.png" class = "keys">: None</li>
+        </ul>
+    </div>
+        </div>
     </div>
     <script type=text/javascript>
     	$SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
@@ -33,6 +38,7 @@
     <script>infoArray = [];</script>
 
    <script>
+
 //       function getDataframe() {
 //           //--------
 ////           var jqxhr = $.getJSON($SCRIPT_ROOT + "/dataframe/23", function(dataf) {
@@ -43,36 +49,27 @@
 ////               console.log(bikes) 
 ////               document.getElementById("testingjs").innerHTML = dope; 
 ////            }); 
-//           //--------
-//           var jqxhr = $.getJSON($SCRIPT_ROOT + "/dataframe/23", function(dataf) {
-//               console.log("hello") 
-//               var thing = JSON.parse(dataf);
-//               var array = $.map(thing, function(value, index) {return [value];});
-//               var bikes = array[0].bikes_available;
-//               var info = ""
-//               var a = [];
-//               for (var i=0; i < array.length; i++) {
-//                   var bikes = array[i].bikes_available;
-//                   var t = array[i].time;
-//                   b = [t, bikes]
-//                   a.push(b);
-//                   info += "<p>bikes available = " + bikes + "</p><br/>";
-//               };
-//               document.getElementById("testingjs").innerHTML = a;
-//            }); 
-//           
-//       }
+
                                  
     </script>
-    <script>
-                                 
+    <script>                     
        function myMap() {
            var jqxhr = $.getJSON($SCRIPT_ROOT + "/stations", function(data) {
                 var stations = data.stations;
 
-                console.log("stations", stations);
                 //draw markers
                 stations.forEach(function(stations) {
+                    
+                    var markerIcon = "/static/bikeicon.png";
+                    var totalStands = stations.bikes_available + stations.stands_available;
+                    if (stations.bikes_available == 0) {
+                        markerIcon = "/static/bikeicon-black.png";
+                    } else if (stations.bikes_available >= (totalStands / 3) && stations.bikes_available <= (2 * totalStands / 3)) {
+                        markerIcon = "/static/bikeicon-orange.png";
+                    } else if (stations.bikes_available < (totalStands / 3)) {
+                        markerIcon = "/static/bikeicon-red.png";
+                    }
+                    
                     var marker = new google.maps.Marker({
                         position : {
                             lat : stations.latitude,
@@ -80,7 +77,8 @@
                         },
                     map : map,
                     title : stations.name,
-                    station_number : stations.number
+                    station_number : stations.number,
+                        icon : markerIcon,
                     });                
 
                     google.maps.event.addListener(marker, 'click', function() {
@@ -90,25 +88,28 @@
                        var infowindow = new google.maps.InfoWindow();
                        infoArray.push(infowindow);
 
-                        contentString = '<div id = "content"><h3>' + stations.name + '</h3></div>' + '<div id="station_availability"><h3>Bikes available: ' + stations.bikes_available + '<br> Stands available: ' + stations.stands_available + '</h3><button type="button" onclick = "getDataframe()">More Info</button></div>';
+                        contentString = '<div id = "content"><h3>' + stations.name + '</h3></div>' + '<div id="station_availability"><h3>Bikes available: ' + stations.bikes_available + '<br> Stands available: ' + stations.stands_available + '</h3><button type="button" onclick = "getDataframe(' + stations.number + ')">More Info</button></div>';
                         infowindow.setContent(contentString);
                         infowindow.open(map, marker);
 
-//                       document.getElementById("jsdata").innerHTML = stations.bikes_available;
                     });
                 })
             })
            
+           var jqweather = $.getJSON($SCRIPT_ROOT + "/weather", function(data) {
+                var weatherInfo = data.weatherInfo;
+                console.log(weatherInfo);
+                var actualTemp = weatherInfo.temp - 273.15; //turning kelvin temp to actual temp in degrees celsius
+                var actualTemp_min = weatherInfo.temp_min - 273.15;
+                var actualTemp_max = weatherInfo.temp_max - 273.15;
+                actualTemp = (actualTemp).toFixed(1) //rounding to 1 decimal place
+                var iconCode = weatherInfo.icon;
+                console.log(iconCode)
+                var icon = "http://openweathermap.org/img/w/" + iconCode + ".png";
+                document.getElementById("dailyDiv").innerHTML = "<h2>" + weatherInfo.date + "</h2><div id = \"icon\"><img src=" + icon +" style = \"float: left;margin-left: 15px;\">" + weatherInfo.main +"</div><div id = \"temp\"><em>" + actualTemp + "°C</em><br/><b>Min: </b>" + actualTemp_min + "°C<br/><b>Max: </b>" + actualTemp_min + "°C</div><br/><br/><br/><div id = \"line\"></div><div id = \"k\"><img src=\"/static/bikeicon.png\" class = \"keys\">: High<img src=\"/static/bikeicon-orange.png\" class = \"keys\">: Medium<br/><img src=\"/static/bikeicon-red.png\" class = \"keys\">: Low<img src=\"/static/bikeicon-black.png\" class = \"keys\">: None</div>"
+                    
+            })
 
-
-
-//           var jqweather = $.getJSON($SCRIPT_ROOT + "/weather", function(data) {
-//                var weatherInfo = data.weatherInfo;
-//                console.log(weatherInfo);
-//                var actualTemp = weatherInfo.temp - 273.15; //turning kelvin temp to actual temp in degrees celsius
-//                document.getElementById("jsdata").innerHTML = "<h2>The forecast is: " + weatherInfo.detail + "<br>The temperature is: " + actualTemp + "</h2>";
-//                
-//            })
            var myLatLng = {
                lat: 53.349976,
                lng: -6.260354
@@ -127,48 +128,55 @@
     
     <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
     <script>
-        function getDataframe() {
+        
+        function getDataframe(num) {
             google.charts.load('current', {packages: ['corechart', 'line']});
             google.charts.setOnLoadCallback(drawBasic);
-            
+            var numb = num;
             function drawBasic() {
-                
-                var jqxhr = $.getJSON($SCRIPT_ROOT + "/dataframe/23", function(dataf) {
-               console.log("hello") 
-               var thing = JSON.parse(dataf);
-               var array = $.map(thing, function(value, index) {return [value];});
-               var bikes = array[0].bikes_available;
-               var info = "";
-               var a = [];
-               for (var i=0; i < array.length; i++) {
-                   var bikes = array[i].bikes_available;
-                   var t = array[i].time;
-                   b = [t, bikes]
-                   a.push(b);
-                   info += "<p>bikes available = " + bikes + "</p><br/>";
-               };
+                var jqxhr = $.getJSON($SCRIPT_ROOT + "/dataframe/" + numb, function(dataf) {
+                var dailyInfo = JSON.parse(dataf);
+                var array = $.map(dailyInfo, function(value, index) {return [value];});
+                var info = "";
+                var a = [];
+                for (var i=0; i < array.length; i++) {
+                    
+                    var bikes = array[i].bikes_available;
+                    var t = array[i].time;
+//                    var date = new Date(t*1000);
+//                    var hours = date.getHours();
+//                    var minutes = "0" + date.getMinutes();
+//                    var seconds = "0" + date.getSeconds();
+//                    var formattedTime = hours + ':' + minutes.substr(-2) + ':' + seconds.substr(-2);
+                    b = [t, bikes];
+                    a.push(b);
+                    info += "<p>bikes available = " + bikes + "</p><br/>";
+                };
                     document.getElementById("testingjs").innerHTML = a;
              
-                  var data = new google.visualization.DataTable();
-                  data.addColumn('number', 'X');
-                  data.addColumn('number', 'BIkes');
+                    var data = new google.visualization.DataTable();
+                    data.addColumn('number', 'X');
+                    data.addColumn('number', 'BIkes');
                     console.log("a is" + a)
-                  data.addRows(a);
+                    data.addRows(a);
 
-                  var options = {
-                    hAxis: {
-                      title: 'Time'
-                    },
-                    vAxis: {
-                      title: 'Bikes Available'
-                    }
-                  };
+                    var options = {
+                        hAxis: {
+                            title: 'Time'
+                        },
+                        vAxis: {
+                            title: 'Bikes Available'
+                        },
+                        crosshair: {
+                        color: '#000',
+                        trigger: 'selection'
+                        }
+                    };
 
-                  var chart = new google.visualization.LineChart(document.getElementById('chart_div'));
-
-                  chart.draw(data, options);
+                    var chart = new google.visualization.LineChart(document.getElementById('chart_div'));
+                    chart.draw(data, options);
                     });
-                }
+            }
         }
             </script>
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAMns2Y33xj53IYHDDwQQb5P-R2mi5nxQk&callback=myMap"></script>
