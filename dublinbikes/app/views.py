@@ -31,7 +31,6 @@ def get_db():
 @app.route("/stations")
 def get_all_stations():
     engine = get_db()
-    #stations = []
     sql = "SELECT number, name, latitude, longitude, bikes_available, stands_available from realtime;"
     #rows = engine.execute("SELECT number, name, latitude, longitude from realtime;")
     rows = engine.execute(sql).fetchall()
