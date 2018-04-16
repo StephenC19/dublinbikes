@@ -45,6 +45,7 @@ def query_weather():
     r = requests.get('http://api.openweathermap.org/data/2.5/weather?q=Dublin&APPID=094f61b4b2da3c4541e43364bab71b0b')
     r = r.json()
     now = datetime.datetime.now()
+    day = datetime.datetime.today().weekday()
     weatherInfo= {'main': r['weather'][0]['main'], 
                      'detail': r['weather'][0]['description'], 
                      'temp': r['main']['temp'],
@@ -52,7 +53,8 @@ def query_weather():
                      'temp_max': r['main']['temp_max'],
                      'wind': r['wind']['speed'],
                      'icon': r['weather'][0]['icon'],
-                     'date': now.strftime("%d-%m-%Y")}
+                     'date': now.strftime("%d-%m-%Y"),
+                     'day':day}
     print(weatherInfo)
     return jsonify(weatherInfo=weatherInfo)
 
@@ -68,12 +70,22 @@ def get_stations(station_id):
     return jsonify(available=data)
         
 
-@app.route('/dataframe/<int:station_id>')
-def dataframe(station_id):
+@app.route('/dataframe/<int:station_id>/<string:dat>')
+def dataframe(station_id,dat):
+    day = "'" + dat + "'"
     engine = get_db()
-    sql = """select bikes_available, stands_available, time, date from stations where number = {} AND date = '2018-04-12';""".format(station_id)
+    sql = """select bikes_available, stands_available, time, date from stations where number = {} AND date = {};""".format(station_id,day)
     df = pd.read_sql_query(sql, engine)
-    print("df is", df.head(1)['time'])
+    df =df.to_json(orient='index')
+    df = jsonify(df)
+    return df
+
+@app.route('/historicalInfo/<int:station_id>/<string:dat>')
+def historicalInfo(station_id,dat):
+    day = "'" + dat + "'" 
+    engine = get_db()
+    sql = """select bikes_available, stands_available, time, date from stations where number = {} AND date = {};""".format(station_id,day)
+    df = pd.read_sql_query(sql, engine)
     df =df.to_json(orient='index')
     df = jsonify(df)
     return df

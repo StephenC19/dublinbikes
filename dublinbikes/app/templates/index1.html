@@ -14,42 +14,38 @@
     </div>
 
     <div style="background-color: rgba(255,255,255,0.7);width:1000px;height: 100%; margin: auto;">
-<!--        <div id = "centerblock">-->
         <div id="googleMap"></div>
-        
         <div id="dailyDiv"></div>
-
+        <div id = "extraInfo"></div>
+        <div id = "buttons" style = "text-align: center;"></div>
         <div id = "testingjs"></div>
-        <div id="chart_div"></div>
+        <div id="chart_div" style = "position:static;bottom:5px;"></div>
         <div id = "weatherdata">
-        <div id="key">
-        <ul>Bikes available:
-            <li><img src="/static/bikeicon.png" class = "keys">: High</li>
-            <li><img src="/static/bikeicon-orange.png" class = "keys">: Medium</li>
-            <li><img src="/static/bikeicon-red.png" class = "keys">: Low</li>
-            <li><img src="/static/bikeicon-black.png" class = "keys">: None</li>
-        </ul>
-    </div>
         </div>
     </div>
+    
+    
+    
     <script type=text/javascript>
     	$SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
     </script>
     <script>infoArray = [];</script>
 
    <script>
-
-//       function getDataframe() {
-//           //--------
-////           var jqxhr = $.getJSON($SCRIPT_ROOT + "/dataframe/23", function(dataf) {
-////               console.log("hello") 
-////               var dope = dataf.slice(5,48);
-////               var thing = JSON.parse(dope)
-////               var bikes = thing.stands_available; 
-////               console.log(bikes) 
-////               document.getElementById("testingjs").innerHTML = dope; 
-////            }); 
-
+       function addButtons(stat_id){
+           buttons = "<b>Average Occupancy: </b><button type=\"button\" onclick = \"getDataframe(" + stat_id + ", 1)\">Monday</button><button type=\"button\" onclick = \"getDataframe(" + stat_id + ", 2)\">Tuesday</button><button type=\"button\" onclick = \"getDataframe(" + stat_id + ", 3)\">Wednesday</button><button type=\"button\" onclick = \"getDataframe(" + stat_id + ", 4)\">Thursday</button><button type=\"button\" onclick = \"getDataframe(" + stat_id + ", 5)\">Friday</button><button type=\"button\" onclick = \"getDataframe(" + stat_id + ", 6)\">Saturday</button><button type=\"button\" onclick = \"getDataframe(" + stat_id + ", 0)\">Sunday</button>";
+           document.getElementById("buttons").innerHTML = buttons
+       }
+       function testarray(stat_id, dat) {
+           var jqxhr = $.getJSON($SCRIPT_ROOT + "/historicalInfo/" + stat_id + "/" + dat, function(dataf) {
+               console.log("hello") 
+//               var dope = dataf.slice(5,48);
+//               var thing = JSON.parse(dope)
+//               var bikes = thing.stands_available; 
+               console.log(dataf) 
+               document.getElementById("testingjs").innerHTML = dataf; 
+            }); 
+       }
                                  
     </script>
     <script>                     
@@ -88,7 +84,7 @@
                        var infowindow = new google.maps.InfoWindow();
                        infoArray.push(infowindow);
 
-                        contentString = '<div id = "content"><h3>' + stations.name + '</h3></div>' + '<div id="station_availability"><h3>Bikes available: ' + stations.bikes_available + '<br> Stands available: ' + stations.stands_available + '</h3><button type="button" onclick = "getDataframe(' + stations.number + ')">More Info</button></div>';
+                        contentString = '<div id = "content"><h3>' + stations.name + '</h3></div>' + '<div id="station_availability"><h3>Bikes available: ' + stations.bikes_available + '<br> Stands available: ' + stations.stands_available + '</h3><button type="button" onclick = "getDataframe(' + stations.number + ',' + new Date().getDay() + ');addButtons('+ stations.number + ')">More Info</button></div>';
                         infowindow.setContent(contentString);
                         infowindow.open(map, marker);
 
@@ -96,17 +92,17 @@
                 })
             })
            
+           //Function to display the realtime weather for Dublin by querying the OpenWeatherAPI
            var jqweather = $.getJSON($SCRIPT_ROOT + "/weather", function(data) {
                 var weatherInfo = data.weatherInfo;
-                console.log(weatherInfo);
                 var actualTemp = weatherInfo.temp - 273.15; //turning kelvin temp to actual temp in degrees celsius
                 var actualTemp_min = weatherInfo.temp_min - 273.15;
                 var actualTemp_max = weatherInfo.temp_max - 273.15;
                 actualTemp = (actualTemp).toFixed(1) //rounding to 1 decimal place
                 var iconCode = weatherInfo.icon;
-                console.log(iconCode)
                 var icon = "http://openweathermap.org/img/w/" + iconCode + ".png";
-                document.getElementById("dailyDiv").innerHTML = "<h2>" + weatherInfo.date + "</h2><div id = \"icon\"><img src=" + icon +" style = \"float: left;margin-left: 15px;\">" + weatherInfo.main +"</div><div id = \"temp\"><em>" + actualTemp + "°C</em><br/><b>Min: </b>" + actualTemp_min + "°C<br/><b>Max: </b>" + actualTemp_min + "°C</div><br/><br/><br/><div id = \"line\"></div><div id = \"k\"><img src=\"/static/bikeicon.png\" class = \"keys\">: High<img src=\"/static/bikeicon-orange.png\" class = \"keys\">: Medium<br/><img src=\"/static/bikeicon-red.png\" class = \"keys\">: Low<img src=\"/static/bikeicon-black.png\" class = \"keys\">: None</div>"
+               
+                document.getElementById("dailyDiv").innerHTML = "<h2>" + weatherInfo.date + "</h2><div id = \"icon\"><img src=" + icon +" style = \"float: left;margin-left: 15px;\">" + weatherInfo.main +"</div><div id = \"temp\"><em>" + actualTemp + "°C</em><br/><b>Min: </b>" + actualTemp_min + "°C<br/><b>Max: </b>" + actualTemp_max + "°C</div><br/><br/><br/><div id = \"line\"></div><div id = \"k\"><img src=\"/static/bikeicon.png\" class = \"keys\">: High<img src=\"/static/bikeicon-orange.png\" class = \"keys\">: Medium<br/><img src=\"/static/bikeicon-red.png\" class = \"keys\">: Low<img src=\"/static/bikeicon-black.png\" class = \"keys\">: None</div>";
                     
             })
 
@@ -127,20 +123,54 @@
     
     
     <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    
     <script>
-        
-        function getDataframe(num) {
+        function getDataframe(num,day) {
             google.charts.load('current', {packages: ['corechart', 'line']});
             google.charts.setOnLoadCallback(drawBasic);
             var numb = num;
+            console.log(day)
+            var d;
+            switch (day) {
+                case 0:
+                    d = '2018-04-08';
+                    d_name = "Sunday"
+                    break;
+                case 1:
+                    d = '2018-04-09';
+                    d_name = "Monday"
+                    break;
+                case 2:
+                    d = '2018-04-10';
+                    d_name = "Tuesday"
+                    break;
+                case 3:
+                    d = '2018-04-11';
+                    d_name = "Wednesday"
+                    break;
+                case 4:
+                    d = '2018-04-12';
+                    d_name = "Thursday"
+                    break;
+                case 5:
+                    d = '2018-04-13';
+                    d_name = "Friday"
+                    break;
+                case  6:
+                    d = '2018-04-14';
+                    d_name = "Saturday"
+            }
+            console.log(d)
+            extra = "<p>EXTRA INFO<br/>Station ID: " + numb + "<br/>Day: " + d_name + "</p>";
+            document.getElementById("extraInfo").innerHTML = extra;
             function drawBasic() {
-                var jqxhr = $.getJSON($SCRIPT_ROOT + "/dataframe/" + numb, function(dataf) {
+                var jqxhr = $.getJSON($SCRIPT_ROOT + "/dataframe/" + numb + "/" + d, function(dataf) {
                 var dailyInfo = JSON.parse(dataf);
                 var array = $.map(dailyInfo, function(value, index) {return [value];});
                 var info = "";
                 var a = [];
-                for (var i=0; i < array.length; i++) {
                     
+                for (var i=0; i < array.length; i++) {
                     var bikes = array[i].bikes_available;
                     var t = array[i].time;
 //                    var date = new Date(t*1000);
@@ -152,12 +182,10 @@
                     a.push(b);
                     info += "<p>bikes available = " + bikes + "</p><br/>";
                 };
-                    document.getElementById("testingjs").innerHTML = a;
              
                     var data = new google.visualization.DataTable();
                     data.addColumn('number', 'X');
                     data.addColumn('number', 'BIkes');
-                    console.log("a is" + a)
                     data.addRows(a);
 
                     var options = {
