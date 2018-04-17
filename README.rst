@@ -22,11 +22,11 @@ Installation
 The files can be downloaded and run using:
 
 
-	`<$ git clone https://github.com/dillonfr/dublinbikes.git>`
+	`$ git clone https://github.com/dillonfr/dublinbikes.git`
 
-	`<$ cd dublinbikes/dublinbikes>`
+	`$ cd dublinbikes/dublinbikes`
 
-	`<$ python run.py>`
+	`$ python run.py`
 	
 	
 Then open localhost:5000_ in your browser to view the webpage. Clicking on a station marker will show the
