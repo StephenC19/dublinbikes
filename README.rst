@@ -2,6 +2,7 @@
 Dublin Bikes - Real time Information
 ===========
 **Team Members**
+
 *Dillon Friel
 *Stephen Colfer
 *Neil McKimm
@@ -27,9 +28,22 @@ The files can be downloaded and run using
 	
 Then open localhost:5000_ in your browser to view the webpage. Clicking on a station markup will show the
 necessary information and provide more options.
+
 .. _localhost:5000: localhost:5000
 
 This package was created with Dublinbikes_ and the JCDecauxAPI_ project template.
 
+.. _Dublinbikes: http://www.dublinbikes.ie
+.. _JCDecauxAPI: https://developer.jcdecaux.com/#/home
+
+
+Credits
+-------
+
+This package was created with Cookiecutter_ and the `audreyr/cookiecutter-pypackage`_ project template. 
+Information was used from Dublinbikes_ and the JCDecauxAPI_.
+
+.. _Cookiecutter: https://github.com/audreyr/cookiecutter
+.. _`audreyr/cookiecutter-pypackage`: https://github.com/audreyr/cookiecutter-pypackage
 .. _Dublinbikes: http://www.dublinbikes.ie
 .. _JCDecauxAPI: https://developer.jcdecaux.com/#/home
