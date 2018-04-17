@@ -156,7 +156,3 @@ class Database:
     def close_db(self):
         self.cur.close()
         self.connection.close()
-      
-#print(stations_list('Dublin.json'))
-#print(query_API(55))
-#information()
