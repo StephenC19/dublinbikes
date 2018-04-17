@@ -3,11 +3,11 @@ Dublin Bikes - Real time Information
 ===========
 **Team Members**
 
-*Dillon Friel
+* Dillon Friel
 
-*Stephen Colfer
+* Stephen Colfer
 
-*Neil McKimm
+* Neil McKimm
 
 About
 --------
@@ -21,12 +21,12 @@ Installation
 -------
 The files can be downloaded and run using:
 
-.. code-block:: console
-	$ git clone https://github.com/dillonfr/dublinbikes.git
 
-	$ cd dublinbikes/dublinbikes
+	`<$ git clone https://github.com/dillonfr/dublinbikes.git>`
 
-	$ python run.py
+	`<$ cd dublinbikes/dublinbikes>`
+
+	`<$ python run.py>`
 	
 	
 Then open localhost:5000_ in your browser to view the webpage. Clicking on a station marker will show the
