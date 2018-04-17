@@ -1,28 +1,22 @@
+"""
+Flask file to create web page using information read from a database
+"""
 from flask import render_template, jsonify, json, g, Flask
 from sqlalchemy import create_engine
 from app import app
-import os
-import json
-import sys
-import re
-import sqlite3
-from _sqlite3 import Row
 import pandas as pd
 import requests
 import datetime
 from datetime import date
 
-#app = Flask(__name__, static_url_path='')
-#app.config.from_object('config')
-#app.config['SQL_ALCHEMY_URI'] = 'mysql://{dbuser}:{dbpassword1}@{dublinbikes.cww5dmspazsv.eu-west-1.rds.amazonaws.com}/{dublinbikes}'
-#db = SQLAlchemy(application)
-
 
 def connect_to_database():
+    """Connects to amazon RDS"""
     engine = create_engine("mysql+mysqldb://dbuser:dbpassword1@dublinbikes.cww5dmspazsv.eu-west-1.rds.amazonaws.com/dublinbikes", echo=True)
     return engine
 
 def get_db():
+    """Connects to the database if not already connected"""
     db = getattr(g, '_database', None)
     if db is None:
         db = g._database = connect_to_database()
@@ -30,21 +24,19 @@ def get_db():
 
 @app.route("/stations")
 def get_all_stations():
+    """Querying the database for real time information for all stations. Returns JSON object"""
     engine = get_db()
     sql = "SELECT number, name, latitude, longitude, bikes_available, stands_available from realtime;"
-    #rows = engine.execute("SELECT number, name, latitude, longitude from realtime;")
     rows = engine.execute(sql).fetchall()
-    print("found {} stations", len(rows))
-    #for row in rows:
-        #stations.append(dict(row))
     return jsonify(stations=[dict(row.items()) for row in rows])
 
 @app.route("/weather")
 def query_weather():
+    """Queries Open Weather API for current weather information of Dublin City. Parses input and returns dictionary
+    of relevant weather information as well current date and time"""
     r = requests.get('http://api.openweathermap.org/data/2.5/weather?q=Dublin&APPID=094f61b4b2da3c4541e43364bab71b0b')
     r = r.json()
     now = datetime.datetime.now()
-    day = datetime.datetime.today().weekday()
     weatherInfo= {'main': r['weather'][0]['main'], 
                      'detail': r['weather'][0]['description'], 
                      'temp': r['main']['temp'],
@@ -52,36 +44,15 @@ def query_weather():
                      'temp_max': r['main']['temp_max'],
                      'wind': r['wind']['speed'],
                      'icon': r['weather'][0]['icon'],
-                     'date': now.strftime("%d-%m-%Y"),
-                     'day':day}
-    print(weatherInfo)
-    return jsonify(weatherInfo=weatherInfo)
+                     'date': now.strftime("%d-%m-%Y")}
+    return jsonify(weatherInfo=weatherInfo)   
 
-@app.route("/available/<int:station_id>")
-def get_stations(station_id):
-    engine = get_db()
-    data = []
-    rows = engine.execute("SELECT bikes_available FROM realtime WHERE number = {};".format(station_id))
+@app.route('/chartDataframe/<int:station_id>/<string:date>')
+def chartDataframe(station_id,date):
+    """Queries database for historical information of station occupancy, taking in station number and the date as parameters.
+    Returns json object of the necessary information to plot info chart"""
 
-    for row in rows:
-        data.append(dict(row))
-        
-    return jsonify(available=data)
-        
-
-@app.route('/dataframe/<int:station_id>/<string:dat>')
-def dataframe(station_id,dat):
-    day = "'" + dat + "'"
-    engine = get_db()
-    sql = """select bikes_available, stands_available, time, date from stations where number = {} AND date = {};""".format(station_id,day)
-    df = pd.read_sql_query(sql, engine)
-    df =df.to_json(orient='index')
-    df = jsonify(df)
-    return df
-
-@app.route('/historicalInfo/<int:station_id>/<string:dat>')
-def historicalInfo(station_id,dat):
-    day = "'" + dat + "'" 
+    day = "'" + date + "'"
     engine = get_db()
     sql = """select bikes_available, stands_available, time, date from stations where number = {} AND date = {};""".format(station_id,day)
     df = pd.read_sql_query(sql, engine)
@@ -92,12 +63,8 @@ def historicalInfo(station_id,dat):
 
 @app.route('/', methods=['GET'])
 def index():
+    """Loads index.html"""
     get_db()
     get_all_stations()
-  
-    returnDict = {}
-    returnDict['user'] = 'User123'
-    returnDict['title'] = 'Dublin Bikes'
-    return render_template("index1.html", **returnDict)
-    # number=number, address=address, lat=lat, long=long
+    return render_template("index1.html")
 

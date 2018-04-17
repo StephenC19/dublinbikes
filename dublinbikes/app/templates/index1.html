@@ -7,21 +7,19 @@
 </head>
 
 <body>
-
+<!-- Header of the website including title and Dublinbikes image-->
     <div id="header">
         <h1>Real-time Dublin Bike Information</h1>
-        <img src = "https://vignette.wikia.nocookie.net/logopedia/images/7/74/Dublinbikes.svg/revision/latest?cb=20140625224430" style = "width:100px;height:55px;position:absolute;right:20%;top:0px;">
+        <a href = "http://www.dublinbikes.ie/" target="_blank"><img src="https://vignette.wikia.nocookie.net/logopedia/images/7/74/Dublinbikes.svg/revision/latest?cb=20140625224430" style="width:100px;height:55px;position:absolute;right:20%;top:0px;"></a>
     </div>
 
+<!--Main body of the website including divs for all other information to be displayed-->
     <div style="background-color: rgba(255,255,255,0.7);width:1000px;height: 100%; margin: auto;">
         <div id="googleMap"></div>
-        <div id="dailyDiv"></div>
-        <div id = "extraInfo"></div>
-        <div id = "buttons" style = "text-align: center;"></div>
-        <div id = "testingjs"></div>
-        <div id="chart_div" style = "position:static;bottom:5px;"></div>
-        <div id = "weatherdata">
-        </div>
+        <div id="weatherDiv"></div>
+        <div id="extraStationInfo"></div>
+        <div id="buttons" style="text-align: center;"></div>
+        <div id="chartDiv" style="position:static;bottom:5px;"></div>
     </div>
     
     
@@ -31,31 +29,17 @@
     </script>
     <script>infoArray = [];</script>
 
-   <script>
-       function addButtons(stat_id){
-           buttons = "<b>Average Occupancy: </b><button type=\"button\" onclick = \"getDataframe(" + stat_id + ", 1)\">Monday</button><button type=\"button\" onclick = \"getDataframe(" + stat_id + ", 2)\">Tuesday</button><button type=\"button\" onclick = \"getDataframe(" + stat_id + ", 3)\">Wednesday</button><button type=\"button\" onclick = \"getDataframe(" + stat_id + ", 4)\">Thursday</button><button type=\"button\" onclick = \"getDataframe(" + stat_id + ", 5)\">Friday</button><button type=\"button\" onclick = \"getDataframe(" + stat_id + ", 6)\">Saturday</button><button type=\"button\" onclick = \"getDataframe(" + stat_id + ", 0)\">Sunday</button>";
-           document.getElementById("buttons").innerHTML = buttons
-       }
-       function testarray(stat_id, dat) {
-           var jqxhr = $.getJSON($SCRIPT_ROOT + "/historicalInfo/" + stat_id + "/" + dat, function(dataf) {
-               console.log("hello") 
-//               var dope = dataf.slice(5,48);
-//               var thing = JSON.parse(dope)
-//               var bikes = thing.stands_available; 
-               console.log(dataf) 
-               document.getElementById("testingjs").innerHTML = dataf; 
-            }); 
-       }
-                                 
-    </script>
-    <script>                     
+   <script>                       
+//Function to display the google map centred around Dublin as well as plotting location markers for the dublinbikes 
+//stations. Also includes code to fetch the real-time weather information.         
        function myMap() {
            var jqxhr = $.getJSON($SCRIPT_ROOT + "/stations", function(data) {
                 var stations = data.stations;
 
-                //draw markers
+                //Draw markers
                 stations.forEach(function(stations) {
                     
+                    //Set different coloured markers depending on the bike availability at a station
                     var markerIcon = "/static/bikeicon.png";
                     var totalStands = stations.bikes_available + stations.stands_available;
                     if (stations.bikes_available == 0) {
@@ -83,7 +67,9 @@
                        }
                        var infowindow = new google.maps.InfoWindow();
                        infoArray.push(infowindow);
-
+                        
+//                      Creates information box including bike and stand availability with the option for more info. 
+//                      The more info button will display a graph of the average occupancy for that station for the current //                      day. For example if the web page is loaded on a monday, all info buttons will return plot a graph //                      of the average occupancy for a full monday. The realtime data is updated every 5 minutes to ensure //                      the user sees regularly up to date info.
                         contentString = '<div id = "content"><h3>' + stations.name + '</h3></div>' + '<div id="station_availability"><h3>Bikes available: ' + stations.bikes_available + '<br> Stands available: ' + stations.stands_available + '</h3><button type="button" onclick = "getDataframe(' + stations.number + ',' + new Date().getDay() + ');addButtons('+ stations.number + ')">More Info</button></div>';
                         infowindow.setContent(contentString);
                         infowindow.open(map, marker);
@@ -102,7 +88,7 @@
                 var iconCode = weatherInfo.icon;
                 var icon = "http://openweathermap.org/img/w/" + iconCode + ".png";
                
-                document.getElementById("dailyDiv").innerHTML = "<h2>" + weatherInfo.date + "</h2><div id = \"icon\"><img src=" + icon +" style = \"float: left;margin-left: 15px;\">" + weatherInfo.main +"</div><div id = \"temp\"><em>" + actualTemp + "°C</em><br/><b>Min: </b>" + actualTemp_min + "°C<br/><b>Max: </b>" + actualTemp_max + "°C</div><br/><br/><br/><div id = \"line\"></div><div id = \"k\"><img src=\"/static/bikeicon.png\" class = \"keys\">: High<img src=\"/static/bikeicon-orange.png\" class = \"keys\">: Medium<br/><img src=\"/static/bikeicon-red.png\" class = \"keys\">: Low<img src=\"/static/bikeicon-black.png\" class = \"keys\">: None</div>";
+                document.getElementById("weatherDiv").innerHTML = "<h2>" + weatherInfo.date + "</h2><div id = \"icon\"><img src=" + icon +" style = \"float: left;margin-left: 15px;\">" + weatherInfo.main +"</div><div id = \"temp\"><em>" + actualTemp + "°C</em><br/><b>Min: </b>" + actualTemp_min + "°C<br/><b>Max: </b>" + actualTemp_max + "°C</div><br/><br/><br/><div id = \"line\"></div><div id = \"k\"><img src=\"/static/bikeicon.png\" class = \"keys\">: High<img src=\"/static/bikeicon-orange.png\" class = \"keys\">: Medium<br/><img src=\"/static/bikeicon-red.png\" class = \"keys\">: Low<img src=\"/static/bikeicon-black.png\" class = \"keys\">: None</div>";
                     
             })
 
@@ -116,7 +102,6 @@
            };
            var map = new google.maps.Map(document.getElementById("googleMap"), mapProp);
        }
-       google.maps.event.addDomListener(window, 'load', myMap);
    </script>
     
     
@@ -125,13 +110,18 @@
     <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
     
     <script>
+//Function to add buttons to select various days of info for the bike occupancy charts
+        function addButtons(stat_id){
+           buttons = "<b>Average Occupancy: </b><button type=\"button\" onclick = \"getDataframe(" + stat_id + ", 1)\">Monday</button><button type=\"button\" onclick = \"getDataframe(" + stat_id + ", 2)\">Tuesday</button><button type=\"button\" onclick = \"getDataframe(" + stat_id + ", 3)\">Wednesday</button><button type=\"button\" onclick = \"getDataframe(" + stat_id + ", 4)\">Thursday</button><button type=\"button\" onclick = \"getDataframe(" + stat_id + ", 5)\">Friday</button><button type=\"button\" onclick = \"getDataframe(" + stat_id + ", 6)\">Saturday</button><button type=\"button\" onclick = \"getDataframe(" + stat_id + ", 0)\">Sunday</button>";
+           document.getElementById("buttons").innerHTML = buttons;
+       }
+//Function to plot the google chart of bike occupancy for a given day
         function getDataframe(num,day) {
             google.charts.load('current', {packages: ['corechart', 'line']});
             google.charts.setOnLoadCallback(drawBasic);
             var numb = num;
-            console.log(day)
             var d;
-            switch (day) {
+            switch (day) { //Sets the day value to a certain date for the SQL query 
                 case 0:
                     d = '2018-04-08';
                     d_name = "Sunday"
@@ -160,37 +150,38 @@
                     d = '2018-04-14';
                     d_name = "Saturday"
             }
-            console.log(d)
-            extra = "<p>EXTRA INFO<br/>Station ID: " + numb + "<br/>Day: " + d_name + "</p>";
-            document.getElementById("extraInfo").innerHTML = extra;
+            
+            //Displays some extra information about the station chosen and other details of the graph
+            extra = "<p>Station ID: " + numb + "<br/>Day: " + d_name + "</p>";
+            document.getElementById("extraStationInfo").innerHTML = extra;
+            
+            //Activates flask function to get historical information from the database for a given date
+            //and station number
             function drawBasic() {
-                var jqxhr = $.getJSON($SCRIPT_ROOT + "/dataframe/" + numb + "/" + d, function(dataf) {
+                var jqxhr = $.getJSON($SCRIPT_ROOT + "/chartDataframe/" + numb + "/" + d, function(dataf) {
                 var dailyInfo = JSON.parse(dataf);
                 var array = $.map(dailyInfo, function(value, index) {return [value];});
                 var info = "";
                 var a = [];
-                    
+                
+                //Creates array of Bike occupancy with regards to time which is sent to the graph
                 for (var i=0; i < array.length; i++) {
                     var bikes = array[i].bikes_available;
                     var t = array[i].time;
-//                    var date = new Date(t*1000);
-//                    var hours = date.getHours();
-//                    var minutes = "0" + date.getMinutes();
-//                    var seconds = "0" + date.getSeconds();
-//                    var formattedTime = hours + ':' + minutes.substr(-2) + ':' + seconds.substr(-2);
-                    b = [t, bikes];
+                    var n = msToTime(t);
+                    b = [n, bikes];
                     a.push(b);
                     info += "<p>bikes available = " + bikes + "</p><br/>";
                 };
-             
+                //Plots graph
                     var data = new google.visualization.DataTable();
-                    data.addColumn('number', 'X');
+                    data.addColumn('string', 'X');
                     data.addColumn('number', 'BIkes');
                     data.addRows(a);
 
                     var options = {
                         hAxis: {
-                            title: 'Time'
+                            title: 'Time',slantedText: true
                         },
                         vAxis: {
                             title: 'Bikes Available'
@@ -201,12 +192,22 @@
                         }
                     };
 
-                    var chart = new google.visualization.LineChart(document.getElementById('chart_div'));
+                    var chart = new google.visualization.LineChart(document.getElementById('chartDiv'));
                     chart.draw(data, options);
                     });
             }
         }
-            </script>
+        //Parses timestamp input to return time in hours:minutes format
+        function msToTime(duration) {
+            var minutes = parseInt((duration/(1000*60))%60)
+                , hours = parseInt((duration/(1000*60*60))%24);
+
+            hours = (hours < 10) ? "0" + hours : hours;
+            minutes = (minutes < 10) ? "0" + minutes : minutes;
+
+            return hours + ":" + minutes;
+        }
+    </script>
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAMns2Y33xj53IYHDDwQQb5P-R2mi5nxQk&callback=myMap"></script>
     
 </body>

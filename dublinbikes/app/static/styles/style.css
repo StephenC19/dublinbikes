@@ -1,6 +1,9 @@
+html, body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+}
 body{
-    margin:0px;
-    padding:0px;
     background-color: lightslategrey;
 }
 h1{
@@ -9,12 +12,13 @@ h1{
     font-family: bell mt;
     font-size: 40px;
     color: white;
+    text-align: center;
 }
 h2{
     color: white;
     font: Ironclad;
 }
-#dailyDiv{
+#weatherDiv{
     color:black;
     border-right:4px solid rgb(8,75,84);
     border-bottom:4px solid rgb(8,75,84);
@@ -39,7 +43,6 @@ img{
     margin:0px;
     
 }
-
 #googleMap {
     height: 50%;
     width: 50%;
@@ -58,10 +61,18 @@ img{
     margin-top:80px;
     padding-bottom: 0px;
 }
-#chart_div{
+#chartDiv{
     position:absolute;
-    bottom: 100px;
     width: 1000px;
+    height:350px;
+}
+#extraStationInfo{
+    text-align: center;
+    background-color: rgb(8,75,84);
+    width:200px;
+    margin: auto;
+    color:white;
+    border-radius: 0px 0px 20px 20px;
 }
 #temp{
     width: 150px;
@@ -89,17 +100,8 @@ img{
     width: 250;
     text-align: left;
 }
-
-#station_availability h1 {
-	color: blue;
-}
 b{
     font-size: 15px;
-}
-html, body {
-    margin: 0;
-    padding: 0;
-    height: 100%;
 }
 em{
     padding:0px;
@@ -108,7 +110,4 @@ em{
     font: baskerville;
     font-size: 40px;
     color: white;
-}
-h1, h6 {
-    text-align: center;
 }

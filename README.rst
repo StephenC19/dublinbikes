@@ -1,34 +1,35 @@
 ===========
-dublinbikes
+Dublin Bikes - Real time Information
 ===========
+**Team Members**
+*Dillon Friel
+*Stephen Colfer
+*Neil McKimm
 
-
-.. image:: https://img.shields.io/pypi/v/dublinbikes.svg
-        :target: https://pypi.python.org/pypi/dublinbikes
-
-.. image:: https://img.shields.io/travis/dillonfr/dublinbikes.svg
-        :target: https://travis-ci.org/dillonfr/dublinbikes
-
-.. image:: https://readthedocs.org/projects/dublinbikes/badge/?version=latest
-        :target: https://dublinbikes.readthedocs.io/en/latest/?badge=latest
-        :alt: Documentation Status
-
-
-
-
-* Free software: MIT license
-* Documentation: https://dublinbikes.readthedocs.io.
-
-Features
+About
 --------
 
-A web application to display both real-time information and trends of the Dublin Bikes available around Dublin
-City.
+This is a web application designed to provide real time information of the availability of bikes at the stations
+around Dublin city. The user can see a map of all the stations as well as view the amount of bikes/stands available
+at each one. Weather information and average occupancy is also available to assist a user in planning a jouney for
+a certain time of day. 
 
-Credits
+Installation
 -------
+The files can be downloaded and run using
 
-This package was created with Cookiecutter_ and the `audreyr/cookiecutter-pypackage`_ project template.
+.. code-block:: console
+	$ git clone https://github.com/dillonfr/dublinbikes.git
 
-.. _Cookiecutter: https://github.com/audreyr/cookiecutter
-.. _`audreyr/cookiecutter-pypackage`: https://github.com/audreyr/cookiecutter-pypackage
+	$ cd dublinbikes/dublinbikes
+
+	$ python run.py
+	
+Then open localhost:5000_ in your browser to view the webpage. Clicking on a station markup will show the
+necessary information and provide more options.
+.. _localhost:5000: localhost:5000
+
+This package was created with Dublinbikes_ and the JCDecauxAPI_ project template.
+
+.. _Dublinbikes: http://www.dublinbikes.ie
+.. _JCDecauxAPI: https://developer.jcdecaux.com/#/home
